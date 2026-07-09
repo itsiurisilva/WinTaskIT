@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using WinTaskIT.Config;
+using WinTaskIT.Native;
 using WinTaskIT.Startup;
 
 namespace WinTaskIT.UI;
@@ -152,8 +153,20 @@ internal sealed class SettingsForm : Form
 
         using (var logoSource = LoadEmbeddedImage("WinTaskIT.Resources.logo.png"))
         using (var logoDarkSource = LoadEmbeddedImage("WinTaskIT.Resources.logo-dark.png"))
+        using (var windowIconBitmap = ResizeHighQuality(logoSource, 64))
         {
-            Icon = (Icon)Icon.FromHandle(ResizeHighQuality(logoSource, 64).GetHicon()).Clone();
+            // Bitmap.GetHicon() hands back a raw HICON we own -- Icon.FromHandle()
+            // only wraps it, so Clone() (an independent copy) is what Icon becomes,
+            // and the original handle must be freed explicitly via DestroyIcon.
+            IntPtr hIcon = windowIconBitmap.GetHicon();
+            try
+            {
+                Icon = (Icon)Icon.FromHandle(hIcon).Clone();
+            }
+            finally
+            {
+                NativeMethods.DestroyIcon(hIcon);
+            }
             _headerMark.Image = ResizeHighQuality(logoSource, 80);
             _githubLink.Image = ResizeHighQuality(logoDarkSource, 48);
         }

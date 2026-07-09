@@ -91,4 +91,10 @@ internal static class NativeMethods
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     public static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
+
+    // Frees an HICON obtained from APIs like Bitmap.GetHicon() that hand back a
+    // raw handle the caller owns -- Icon.FromHandle() only wraps such a handle,
+    // it doesn't free it, so callers must destroy it explicitly once done.
+    [DllImport("user32.dll")]
+    public static extern bool DestroyIcon(IntPtr hIcon);
 }

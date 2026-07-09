@@ -7,7 +7,8 @@ internal static class WindowIconUtil
 {
     /// <summary>Best-effort icon for a window: prefers the window's own icon
     /// (e.g. a Chrome-installed web app's site icon), falling back to its exe's
-    /// file icon, then a generic system icon.</summary>
+    /// file icon, then a generic system icon. Every return path is an
+    /// independently-owned Icon the caller must Dispose.</summary>
     public static Icon GetIconFor(IntPtr hwnd)
     {
         IntPtr hIcon = NativeMethods.SendMessage(hwnd, NativeMethods.WM_GETICON, (IntPtr)NativeMethods.ICON_BIG, IntPtr.Zero);
@@ -47,7 +48,9 @@ internal static class WindowIconUtil
             }
         }
 
-        return SystemIcons.Application;
+        // Clone -- SystemIcons instances are process-wide shared/cached; disposing
+        // the shared instance itself would invalidate it for every other caller.
+        return (Icon)SystemIcons.Application.Clone();
     }
 
     private static string? GetExePath(IntPtr hwnd)

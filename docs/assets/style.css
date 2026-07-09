@@ -137,6 +137,7 @@ code {
   margin: 1.5rem 0;
 }
 .card p:last-child { margin-bottom: 0; }
+.card.spotlight { border-left: 4px solid var(--accent); }
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -207,6 +208,7 @@ table.compare th {
 }
 table.compare td.yes { color: var(--accent); font-weight: 600; }
 table.compare td.no { color: var(--muted); }
+table.compare tr.highlight-row td { background: var(--card); font-weight: 600; border-top: 2px solid var(--accent); }
 .breadcrumb {
   font-size: 0.88rem;
   color: var(--muted);

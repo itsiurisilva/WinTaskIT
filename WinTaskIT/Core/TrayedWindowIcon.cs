@@ -10,6 +10,7 @@ internal sealed class TrayedWindowIcon : IDisposable
     public string Aumid { get; }
 
     private readonly NotifyIcon _icon;
+    private readonly Icon _iconImage;
     private readonly ToolStripMenuItem _playPauseItem;
 
     public event Action<TrayedWindowIcon>? RestoreRequested;
@@ -34,9 +35,12 @@ internal sealed class TrayedWindowIcon : IDisposable
         menu.Items.Add("Remove from tray list", null, (_, _) => RemoveRequested?.Invoke(this));
         menu.Opening += OnMenuOpening;
 
+        // NotifyIcon.Icon only references this handle -- it doesn't take
+        // ownership or dispose it, so we hold and dispose it ourselves.
+        _iconImage = WindowIconUtil.GetIconFor(hwnd);
         _icon = new NotifyIcon
         {
-            Icon = WindowIconUtil.GetIconFor(hwnd),
+            Icon = _iconImage,
             Text = Truncate(displayName, 63), // NotifyIcon.Text is capped at 63 chars
             Visible = true,
             ContextMenuStrip = menu,
@@ -64,5 +68,6 @@ internal sealed class TrayedWindowIcon : IDisposable
     {
         _icon.Visible = false;
         _icon.Dispose();
+        _iconImage.Dispose();
     }
 }
