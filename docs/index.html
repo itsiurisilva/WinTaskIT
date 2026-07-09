@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>WinTaskIT - Windows System Tray Utility for YouTube &amp; App Windows</title>
-<meta name="description" content="Hide YouTube-as-an-app or any Windows window in the system tray instead of the taskbar, always or only while playing audio, with tray media controls. No admin rights required.">
+<title>WinTaskIT - Play YouTube in the Background on Windows</title>
+<meta name="description" content="Keep YouTube playing in the background on Windows. WinTaskIT sends the window to your system tray with tray media controls. Free, no admin rights, no ads.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://itsiurisilva.github.io/WinTaskIT/">
@@ -12,15 +12,15 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="WinTaskIT">
 <meta property="og:url" content="https://itsiurisilva.github.io/WinTaskIT/">
-<meta property="og:title" content="WinTaskIT - Send App Windows to the System Tray on Windows">
-<meta property="og:description" content="Hide YouTube-as-an-app or any Windows window in the system tray instead of the taskbar, always or only while playing audio, with tray media controls. No admin rights required.">
+<meta property="og:title" content="WinTaskIT - Play YouTube in the Background on Windows">
+<meta property="og:description" content="Keep YouTube playing in the background on Windows. WinTaskIT sends the window to your system tray with tray media controls. Free, no admin rights, no ads.">
 <meta property="og:image" content="https://itsiurisilva.github.io/WinTaskIT/assets/social-preview.png">
-<meta property="og:image:width" content="1280">
+<meta property="og:image:width" content="1269">
 <meta property="og:image:height" content="640">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="WinTaskIT - Send App Windows to the System Tray on Windows">
-<meta name="twitter:description" content="Hide YouTube-as-an-app or any Windows window in the system tray instead of the taskbar, always or only while playing audio, with tray media controls. No admin rights required.">
+<meta name="twitter:title" content="WinTaskIT - Play YouTube in the Background on Windows">
+<meta name="twitter:description" content="Keep YouTube playing in the background on Windows. WinTaskIT sends the window to your system tray with tray media controls. Free, no admin rights, no ads.">
 <meta name="twitter:image" content="https://itsiurisilva.github.io/WinTaskIT/assets/social-preview.png">
 
 <script type="application/ld+json">
@@ -43,160 +43,64 @@
 }
 </script>
 
-<style>
-  :root {
-    color-scheme: light dark;
-    --bg: #ffffff;
-    --fg: #1a1a1a;
-    --muted: #5b5b5b;
-    --border: #e2e2e2;
-    --card: #f7f7f7;
-    --accent: #2f6fed;
-    --code-bg: #f0f0f0;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #14161a;
-      --fg: #ececec;
-      --muted: #a3a3a3;
-      --border: #2a2d33;
-      --card: #1c1f24;
-      --accent: #6d9bff;
-      --code-bg: #23262c;
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I need this if I just watch YouTube in a normal browser tab?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. A normal browser tab already keeps YouTube's audio playing when minimized in Chrome, Edge, or Firefox. WinTaskIT is for YouTube installed as an app (a Chrome or Edge \"app\" window), which loses that tray-like behavior when minimized. See the background play guide for other methods."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it only work with YouTube?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. YouTube-as-an-installed-app is the motivating case, but any top-level window with an AUMID can be tracked, including other installed web apps, PWAs, and most modern Windows apps."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it need admin rights?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. It installs per-user to %LocalAppData%\\Programs\\WinTaskIT, not Program Files, and never asks for elevation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will it slow down my PC or use noticeable resources?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. It's a small, self-contained native app that runs quietly in the background watching window events, typically around 50 MB of memory and 0% CPU in Task Manager while it's running."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it collect any data or phone home?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. There's no telemetry, network access, or account. Settings are stored locally in %AppData%\\WinTaskIT."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I fully remove it, including settings?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Uninstall from Windows Settings, or use the in-app Uninstall button, either one clears the startup entry, the Win+R shortcut, and all saved settings."
+      }
     }
-  }
-  :root[data-theme="dark"] {
-    --bg: #14161a; --fg: #ececec; --muted: #a3a3a3; --border: #2a2d33; --card: #1c1f24; --accent: #6d9bff; --code-bg: #23262c;
-  }
-  :root[data-theme="light"] {
-    --bg: #ffffff; --fg: #1a1a1a; --muted: #5b5b5b; --border: #e2e2e2; --card: #f7f7f7; --accent: #2f6fed; --code-bg: #f0f0f0;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.55;
-  }
-  main {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem 3rem;
-  }
-  .hero {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-  }
-  .title-row {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin: 0 0 0.4rem;
-  }
-  .title-row svg { flex: none; }
-  h1 {
-    font-size: 2.1rem;
-    margin: 0;
-    letter-spacing: -0.02em;
-  }
-  .tagline {
-    color: var(--muted);
-    font-size: 1.15rem;
-    margin: 0 0 1.5rem;
-  }
-  nav.subnav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 0.9rem;
-    font-size: 0.92rem;
-    margin: 0 0 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-  nav.subnav a { color: var(--muted); text-decoration: none; }
-  nav.subnav a:hover { color: var(--accent); text-decoration: underline; }
-  .cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--accent);
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 0.75rem 1.3rem;
-    border-radius: 8px;
-    font-size: 1rem;
-  }
-  .cta:hover { opacity: 0.9; }
-  .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 2.5rem; }
-  .cta-note { color: var(--muted); font-size: 0.9rem; }
-  h2 {
-    font-size: 1.3rem;
-    margin: 2.5rem 0 0.75rem;
-    letter-spacing: -0.01em;
-    scroll-margin-top: 1.5rem;
-  }
-  h3 {
-    font-size: 1.05rem;
-    margin: 1.5rem 0 0.5rem;
-  }
-  p { margin: 0 0 1rem; }
-  ul { margin: 0 0 1rem; padding-left: 1.25rem; }
-  li { margin-bottom: 0.4rem; }
-  code {
-    background: var(--code-bg);
-    padding: 0.15em 0.4em;
-    border-radius: 4px;
-    font-size: 0.9em;
-  }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.1rem 1.3rem;
-    margin: 1.5rem 0;
-  }
-  .card p:last-child { margin-bottom: 0; }
-  a { color: var(--accent); }
-  .faq dt {
-    font-weight: 600;
-    margin-top: 1.1rem;
-  }
-  .faq dd {
-    margin: 0.3rem 0 0;
-    color: var(--muted);
-  }
-  figure.shot {
-    margin: 0 0 1.75rem;
-    text-align: center;
-  }
-  figure.shot img {
-    max-width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--card);
-  }
-  figure.shot figcaption {
-    margin-top: 0.6rem;
-    color: var(--muted);
-    font-size: 0.88rem;
-  }
-  footer {
-    margin-top: 3.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 0.9rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 1rem;
-  }
-  footer a { color: var(--muted); }
-</style>
+  ]
+}
+</script>
+
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <main>
@@ -221,41 +125,69 @@
     <a href="#how-it-works">How it works</a>
     <a href="#settings">Settings</a>
     <a href="#screenshots">Screenshots</a>
-    <a href="#install">Install</a>
+    <a href="#quick-start">Quick Start</a>
     <a href="#uninstall">Uninstall</a>
     <a href="#faq">FAQ</a>
+    <a href="how-to-play-youtube-in-background-windows.html">Background Play Guide</a>
     <a href="https://github.com/itsiurisilva/WinTaskIT">Source</a>
   </nav>
 
   <div class="cta-row">
     <a class="cta" href="https://github.com/itsiurisilva/WinTaskIT/releases/latest">Download latest release</a>
-    <span class="cta-note">Windows 10/11 &middot; no admin rights &middot; free &amp; open source</span>
+    <a class="cta-secondary" href="https://github.com/itsiurisilva/WinTaskIT">View on GitHub</a>
   </div>
+  <p class="cta-note">Windows 10/11 &middot; no admin rights &middot; free &amp; open source</p>
 
   <h2 id="why">Why this exists</h2>
   <p>
-    The motivating case is an installed web app window, YouTube as a
-    Chrome "app," for instance. Minimizing it the normal way still leaves a
-    taskbar button sitting there. Every native desktop media player solved
-    "keep playing quietly and get out of my taskbar" a decade or two ago.
-    Somehow the entire installed-web-app ecosystem, Chrome, YouTube,
-    Google, all of it, never got around to shipping this natively. So
-    here's a small third-party utility patching over a gap that a
-    trillion-dollar company could have closed with about a day of
-    engineering time.
+    Minimizing an installed web app window, YouTube as a Chrome "app," for
+    instance, still leaves a taskbar button sitting there. Native desktop
+    media players solved "play quietly and stay out of my taskbar" a couple
+    of decades ago; the installed-web-app world never did.
+  </p>
+  <p>
+    WinTaskIT patches that gap: send the window to the tray, keep the audio
+    playing, control playback right from the tray icon. If you just want the
+    full rundown of every way to keep YouTube playing in the background on
+    Windows, see the
+    <a href="how-to-play-youtube-in-background-windows.html">background play guide</a>.
   </p>
 
   <h2 id="features">Features</h2>
-  <ul>
-    <li><strong>Per-app tray rules.</strong> Choose, for each tracked window, whether it always goes to the tray on minimize or only while it's actively playing audio.</li>
-    <li><strong>Tray media controls.</strong> Play/Pause, Next, Previous, and Close right from the tray icon's right-click menu, no need to restore the window first.</li>
-    <li><strong>Works with any window, not just YouTube.</strong> Anything with an Application User Model ID, installed web apps/PWAs, Electron apps, most modern Windows apps, can be tracked.</li>
-    <li><strong>Invisible until needed.</strong> No persistent tray icon of its own; it only shows one for windows you've actually sent to the tray.</li>
-    <li><strong>Lightweight.</strong> Idles around 50 MB of memory and 0% CPU in Task Manager, no background services, no telemetry.</li>
-    <li><strong>No admin rights.</strong> Installs per-user via a normal installer wizard, nothing system-wide.</li>
-    <li><strong>Clean uninstall.</strong> Removing it undoes the startup entry, the Win+R shortcut, and all saved settings, no leftovers.</li>
-    <li><strong>Free and open source.</strong> MIT licensed, source on GitHub.</li>
-  </ul>
+  <div class="features-grid">
+    <div class="feature-card">
+      <strong>Per-app tray rules</strong>
+      <p>Always send to tray, or only while it's actually playing audio.</p>
+    </div>
+    <div class="feature-card">
+      <strong>Tray media controls</strong>
+      <p>Play/Pause, Next, Previous, and Close from the tray icon's right-click menu.</p>
+    </div>
+    <div class="feature-card">
+      <strong>Works with more than YouTube</strong>
+      <p>Anything with an Application User Model ID: installed web apps, PWAs, most modern Windows apps.</p>
+    </div>
+    <div class="feature-card">
+      <strong>Invisible until needed</strong>
+      <p>No persistent tray icon of its own; one appears only for windows you've sent to the tray.</p>
+    </div>
+    <div class="feature-card">
+      <strong>Lightweight</strong>
+      <p>About 50 MB of memory and 0% CPU in Task Manager while it's running. No background services, no telemetry.</p>
+    </div>
+    <div class="feature-card">
+      <strong>No admin rights</strong>
+      <p>Installs per-user via a normal installer wizard, nothing system-wide.</p>
+    </div>
+    <div class="feature-card">
+      <strong>Clean uninstall</strong>
+      <p>Removes the startup entry, the Win+R shortcut, and all saved settings. No leftovers.</p>
+    </div>
+    <div class="feature-card">
+      <strong>Free and open source</strong>
+      <p>MIT licensed, source on GitHub.</p>
+    </div>
+  </div>
 
   <h2 id="how-it-works">How it works</h2>
   <ul>
@@ -278,11 +210,14 @@
   <h2 id="settings">Settings</h2>
   <p>
     Launch <code>WinTaskIT.exe</code> a second time (or type <code>wintaskit</code>
-    into Win+R) to open Settings. From there you can add windows from what's
-    currently open, enable or disable individual entries, toggle "Run at
-    Windows startup," and right-click any entry to switch its tray behavior
-    between "Always send to tray" and "Only while playing audio."
+    into Win+R) to open Settings. From there:
   </p>
+  <ul>
+    <li>Add windows from what's currently open.</li>
+    <li>Enable or disable individual entries.</li>
+    <li>Toggle "Run at Windows startup."</li>
+    <li>Right-click any entry to switch it between "Always send to tray" and "Only while playing audio."</li>
+  </ul>
 
   <h2 id="screenshots">Screenshots</h2>
   <figure class="shot">
@@ -291,31 +226,36 @@
   </figure>
   <figure class="shot">
     <img src="assets/Taskmanager.png" alt="Task Manager showing the WinTaskIT process at 0% CPU and 51.8 MB of memory">
-    <figcaption>What "lightweight" actually looks like in Task Manager: 0% CPU, ~50 MB of memory.</figcaption>
+    <figcaption>What "lightweight" looks like in Task Manager while it's running: 0% CPU, ~50 MB of memory.</figcaption>
   </figure>
 
-  <h2 id="install">Install</h2>
-  <p>
-    Download the setup zip from
-    <a href="https://github.com/itsiurisilva/WinTaskIT/releases/latest">the latest release</a>,
-    unzip it, and run <code>WinTaskIT-Setup.exe</code>. It's a normal
-    Windows installer wizard, still no admin rights required, it installs
-    just for your user account (to <code>%LocalAppData%\Programs\WinTaskIT</code>),
-    not system-wide.
-  </p>
+  <h2 id="quick-start">Quick Start</h2>
+  <ol>
+    <li>Download the setup zip from <a href="https://github.com/itsiurisilva/WinTaskIT/releases/latest">the latest release</a>.</li>
+    <li>Unzip it and run <code>WinTaskIT-Setup.exe</code>, a normal installer wizard. No admin rights needed, it installs just for your user account (to <code>%LocalAppData%\Programs\WinTaskIT</code>).</li>
+    <li>Launch it once (or press Win+R and type <code>wintaskit</code>) to open Settings and add the windows you want tracked.</li>
+  </ol>
 
   <h2 id="uninstall">Uninstall</h2>
+  <ul>
+    <li><strong>The normal way:</strong> Settings &rarr; Apps &rarr; Installed apps &rarr; WinTaskIT &rarr; Uninstall.</li>
+    <li><strong>From the app:</strong> relaunch the exe to open Settings and click <strong>Uninstall...</strong>.</li>
+  </ul>
   <p>
-    Uninstall it like any other app: Settings &rarr; Apps &rarr; Installed
-    apps &rarr; WinTaskIT &rarr; Uninstall. This also cleans up the startup
-    registration, the <code>wintaskit</code> Win+R shortcut, and all saved
-    settings. Alternatively, relaunch the exe to open Settings and click
-    <strong>Uninstall...</strong>, which does the same registry/settings
-    cleanup without removing the installed program files.
+    Either one clears the startup registration, the <code>wintaskit</code>
+    Win+R shortcut, and all saved settings.
   </p>
 
   <h2 id="faq">FAQ</h2>
   <dl class="faq">
+    <dt>Do I need this if I just watch YouTube in a normal browser tab?</dt>
+    <dd>No. A normal browser tab already keeps YouTube's audio playing when
+      minimized in Chrome, Edge, or Firefox. WinTaskIT is for YouTube
+      installed as an app (a Chrome or Edge "app" window), which loses that
+      tray-like behavior when minimized. See the
+      <a href="how-to-play-youtube-in-background-windows.html">background play guide</a>
+      for other methods.</dd>
+
     <dt>Does it only work with YouTube?</dt>
     <dd>No. YouTube-as-an-installed-app is the motivating case, but any
       top-level window with an AUMID can be tracked, including other
@@ -326,9 +266,9 @@
       not <code>Program Files</code>, and never asks for elevation.</dd>
 
     <dt>Will it slow down my PC or use noticeable resources?</dt>
-    <dd>No. It's a small, self-contained native app that sits idle watching
-      window events until one you've configured tries to minimize, typically
-      around 50 MB of memory and 0% CPU in Task Manager.</dd>
+    <dd>No. It's a small, self-contained native app that runs quietly in the
+      background watching window events, typically around 50 MB of memory
+      and 0% CPU in Task Manager while it's running.</dd>
 
     <dt>Does it collect any data or phone home?</dt>
     <dd>No. There's no telemetry, network access, or account. Settings are
@@ -347,6 +287,8 @@
     <a href="https://github.com/itsiurisilva/WinTaskIT/releases/latest">Releases</a>
     <span>&middot;</span>
     <a href="https://github.com/itsiurisilva/WinTaskIT/blob/master/LICENSE">MIT License</a>
+    <span>&middot;</span>
+    <a href="#">Back to top</a>
   </footer>
 </main>
 </body>
