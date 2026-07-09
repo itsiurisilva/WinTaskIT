@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" width="1260" height="360">
+  <path d="M 70,78 L 26,78 L 34,22 L 92,22 L 88,74" fill="none" stroke="#f5f1ea" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></path>
+  <circle cx="90" cy="84" r="17" fill="#FF7A33"></circle>
+  <text x="120" y="76" font-family="Manrope, Arial, sans-serif" font-weight="800" font-size="52" letter-spacing="-1" fill="#f5f1ea">WinTask<tspan fill="#FFB238">IT</tspan></text>
+</svg>

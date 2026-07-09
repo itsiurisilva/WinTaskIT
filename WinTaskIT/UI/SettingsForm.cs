@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using WinTaskIT.Config;
 using WinTaskIT.Startup;
 
@@ -5,6 +6,8 @@ namespace WinTaskIT.UI;
 
 internal sealed class SettingsForm : Form
 {
+    private const string GitHubUrl = "https://github.com/itsiurisilva/WinTaskIT";
+
     private readonly ListView _list = new()
     {
         Dock = DockStyle.Fill,
@@ -17,12 +20,111 @@ internal sealed class SettingsForm : Form
     private readonly ToolStripMenuItem _alwaysItem = new("Always send to tray");
     private readonly ToolStripMenuItem _onlyPlayingItem = new("Only while playing audio");
 
+    // Composed from the transparent logo mark + drawn text rather than the
+    // opaque header banner image -- the banner's own baked-in background
+    // color doesn't reliably pixel-match a BackColor set here, which left a
+    // visible seam at the pillarbox edges. A transparent mark has no such
+    // seam, since this panel's BackColor is the only background involved.
+    private readonly Panel _header = new()
+    {
+        Dock = DockStyle.Top,
+        Height = 90,
+        BackColor = ColorTranslator.FromHtml("#0C0D0F"),
+    };
+
+    // TableLayoutPanel + Anchor=None centers each cell's content instead of
+    // hardcoded pixel Locations, which clipped the subtitle under DPI scaling.
+    private readonly TableLayoutPanel _headerLayout = new()
+    {
+        Dock = DockStyle.Fill,
+        ColumnCount = 2,
+        RowCount = 1,
+        BackColor = Color.Transparent,
+    };
+
+    private readonly TableLayoutPanel _headerTextStack = new()
+    {
+        ColumnCount = 1,
+        RowCount = 2,
+        AutoSize = true,
+        AutoSizeMode = AutoSizeMode.GrowAndShrink,
+        BackColor = Color.Transparent,
+        Anchor = AnchorStyles.None,
+        Margin = new Padding(0),
+    };
+
+    private readonly FlowLayoutPanel _headerWordmarkRow = new()
+    {
+        AutoSize = true,
+        AutoSizeMode = AutoSizeMode.GrowAndShrink,
+        FlowDirection = FlowDirection.LeftToRight,
+        BackColor = Color.Transparent,
+        Margin = new Padding(0),
+        Padding = new Padding(0),
+    };
+
+    private readonly PictureBox _headerMark = new()
+    {
+        Size = new Size(40, 40),
+        SizeMode = PictureBoxSizeMode.Zoom,
+        BackColor = Color.Transparent,
+        Anchor = AnchorStyles.None,
+    };
+
+    private readonly Label _headerWordmark1 = new()
+    {
+        Text = "WinTask",
+        AutoSize = true,
+        Margin = new Padding(0),
+        Font = new Font("Segoe UI", 17F, FontStyle.Bold),
+        ForeColor = ColorTranslator.FromHtml("#F5F1EA"),
+        BackColor = Color.Transparent,
+    };
+
+    private readonly Label _headerWordmark2 = new()
+    {
+        Text = "IT",
+        AutoSize = true,
+        Margin = new Padding(0),
+        Font = new Font("Segoe UI", 17F, FontStyle.Bold),
+        ForeColor = ColorTranslator.FromHtml("#FFB238"),
+        BackColor = Color.Transparent,
+    };
+
+    private readonly Label _headerSubtitle = new()
+    {
+        Text = "github.com/itsiurisilva/WinTaskIT",
+        AutoSize = true,
+        Margin = new Padding(0),
+        Font = new Font("Consolas", 8.5F),
+        ForeColor = ColorTranslator.FromHtml("#8A8D93"),
+        BackColor = Color.Transparent,
+    };
+
+    private readonly FlowLayoutPanel _startupRow = new()
+    {
+        Dock = DockStyle.Top,
+        AutoSize = true,
+        FlowDirection = FlowDirection.LeftToRight,
+    };
+
     private readonly CheckBox _runAtStartupCheckBox = new()
     {
         Text = "Run at Windows startup",
-        Dock = DockStyle.Top,
         AutoSize = true,
         Padding = new Padding(6),
+    };
+
+    private readonly PictureBox _githubLink = new()
+    {
+        // No background chip -- uses the dark-stroke logo variant instead of
+        // the cream one, since dark linework has enough contrast directly
+        // against the dialog's light background without a backing box.
+        Size = new Size(24, 24),
+        SizeMode = PictureBoxSizeMode.Zoom,
+        Cursor = Cursors.Hand,
+        Margin = new Padding(6, 7, 0, 0),
+        BackColor = Color.Transparent,
     };
 
     private AppSettings _settings = ConfigManager.Load();
@@ -31,8 +133,8 @@ internal sealed class SettingsForm : Form
     {
         Text = "WinTaskIT settings";
         Width = 700;
-        Height = 420;
-        MinimumSize = new Size(600, 360);
+        Height = 490;
+        MinimumSize = new Size(600, 400);
         StartPosition = FormStartPosition.CenterScreen;
         MinimizeBox = false;
 
@@ -47,6 +149,29 @@ internal sealed class SettingsForm : Form
         _modeMenu.Opening += OnModeMenuOpening;
         _list.ContextMenuStrip = _modeMenu;
         _list.MouseUp += OnListMouseUp;
+
+        using (var logoSource = LoadEmbeddedImage("WinTaskIT.Resources.logo.png"))
+        using (var logoDarkSource = LoadEmbeddedImage("WinTaskIT.Resources.logo-dark.png"))
+        {
+            Icon = (Icon)Icon.FromHandle(ResizeHighQuality(logoSource, 64).GetHicon()).Clone();
+            _headerMark.Image = ResizeHighQuality(logoSource, 80);
+            _githubLink.Image = ResizeHighQuality(logoDarkSource, 48);
+        }
+        _githubLink.Click += (_, _) => Process.Start(new ProcessStartInfo(GitHubUrl) { UseShellExecute = true });
+        new ToolTip().SetToolTip(_githubLink, "Open WinTaskIT on GitHub");
+        _startupRow.Controls.Add(_runAtStartupCheckBox);
+        _startupRow.Controls.Add(_githubLink);
+
+        _headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 88));
+        _headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        _headerLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        _headerWordmarkRow.Controls.Add(_headerWordmark1);
+        _headerWordmarkRow.Controls.Add(_headerWordmark2);
+        _headerTextStack.Controls.Add(_headerWordmarkRow, 0, 0);
+        _headerTextStack.Controls.Add(_headerSubtitle, 0, 1);
+        _headerLayout.Controls.Add(_headerMark, 0, 0);
+        _headerLayout.Controls.Add(_headerTextStack, 1, 0);
+        _header.Controls.Add(_headerLayout);
 
         // Two separate rows (not one shared row) so the button groups can never
         // compete for the same horizontal space and clip each other, regardless
@@ -83,7 +208,8 @@ internal sealed class SettingsForm : Form
         CancelButton = closeButton;
 
         Controls.Add(_list);
-        Controls.Add(_runAtStartupCheckBox);
+        Controls.Add(_startupRow);
+        Controls.Add(_header);
         Controls.Add(buttonPanel);
         Controls.Add(exitPanel);
 
@@ -92,6 +218,30 @@ internal sealed class SettingsForm : Form
         _runAtStartupCheckBox.CheckedChanged += OnRunAtStartupChanged;
 
         PopulateList();
+    }
+
+    private static Image LoadEmbeddedImage(string resourceName)
+    {
+        var assembly = typeof(SettingsForm).Assembly;
+        using var stream = assembly.GetManifestResourceStream(resourceName)
+            ?? throw new InvalidOperationException($"Missing embedded resource: {resourceName}");
+        return Image.FromStream(stream);
+    }
+
+    // PictureBox's own on-the-fly scaling (and Bitmap.GetHicon) use low-quality
+    // interpolation, which looks blocky scaling this artwork's 376x376 source
+    // down to icon sizes. Resizing ahead of time with high-quality settings
+    // avoids that instead of relying on the control's own scaling.
+    private static Bitmap ResizeHighQuality(Image source, int size)
+    {
+        var bitmap = new Bitmap(size, size);
+        using var g = Graphics.FromImage(bitmap);
+        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+        g.DrawImage(source, new Rectangle(0, 0, size, size));
+        return bitmap;
     }
 
     private void OnRunAtStartupChanged(object? sender, EventArgs e)
