@@ -1,0 +1,163 @@
+<title>WinTaskIT</title>
+<meta name="description" content="A tiny Windows utility that sends specific app windows to the system tray instead of the taskbar.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #5b5b5b;
+    --border: #e2e2e2;
+    --card: #f7f7f7;
+    --accent: #2f6fed;
+    --code-bg: #f0f0f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --fg: #ececec;
+      --muted: #a3a3a3;
+      --border: #2a2d33;
+      --card: #1c1f24;
+      --accent: #6d9bff;
+      --code-bg: #23262c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161a; --fg: #ececec; --muted: #a3a3a3; --border: #2a2d33; --card: #1c1f24; --accent: #6d9bff; --code-bg: #23262c;
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #5b5b5b; --border: #e2e2e2; --card: #f7f7f7; --accent: #2f6fed; --code-bg: #f0f0f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 3rem;
+  }
+  h1 {
+    font-size: 2.1rem;
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.02em;
+  }
+  .tagline {
+    color: var(--muted);
+    font-size: 1.15rem;
+    margin: 0 0 2rem;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.75rem 1.3rem;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  .cta:hover { opacity: 0.9; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 2.5rem; }
+  .cta-note { color: var(--muted); font-size: 0.9rem; }
+  h2 {
+    font-size: 1.3rem;
+    margin: 2.5rem 0 0.75rem;
+    letter-spacing: -0.01em;
+  }
+  p { margin: 0 0 1rem; }
+  ul { margin: 0 0 1rem; padding-left: 1.25rem; }
+  li { margin-bottom: 0.4rem; }
+  code {
+    background: var(--code-bg);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
+    margin: 1.5rem 0;
+  }
+  .card p:last-child { margin-bottom: 0; }
+  a { color: var(--accent); }
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+  }
+  footer a { color: var(--muted); }
+</style>
+
+<main>
+  <h1>WinTaskIT</h1>
+  <p class="tagline">
+    Sends specific app windows to the system tray instead of the taskbar
+    when you minimize them &mdash; always, or only while they're actually
+    playing audio. Your choice, per app.
+  </p>
+
+  <div class="cta-row">
+    <a class="cta" href="https://github.com/itsiurisilva/WinTaskIT/releases/latest">Download latest release</a>
+    <span class="cta-note">Windows 10/11 &middot; no admin rights &middot; free &amp; open source</span>
+  </div>
+
+  <h2>Why this exists</h2>
+  <p>
+    The motivating case is an installed web app window &mdash; YouTube as a
+    Chrome "app," for instance. Minimizing it the normal way still leaves a
+    taskbar button sitting there. Every native desktop media player solved
+    "keep playing quietly and get out of my taskbar" a decade or two ago.
+    Somehow the entire installed-web-app ecosystem &mdash; Chrome, YouTube,
+    Google, all of it &mdash; never got around to shipping this natively. So
+    here's a small third-party utility patching over a gap that a trillion-
+    dollar company could have closed with about a day of engineering time.
+  </p>
+
+  <h2>How it works</h2>
+  <ul>
+    <li>Runs invisibly in the background &mdash; no persistent tray icon of its own.</li>
+    <li>Watches minimizing windows system-wide for their Application User Model ID (AUMID), the same id Windows uses to identify installed web apps/PWAs.</li>
+    <li>If that window is on your configured list, WinTaskIT hides it and shows a tray icon instead &mdash; either always, or only while it's actually producing sound, depending on how you set that entry up.</li>
+    <li>Click the tray icon to restore the window. Right-click for Play/Pause, Next, Previous, Close, or to stop tracking it.</li>
+  </ul>
+
+  <div class="card">
+    <p>
+      <strong>Good combo:</strong> pair WinTaskIT with
+      <a href="https://github.com/uBlockOrigin/uBOL-home">uBlock Origin Lite</a>.
+      WinTaskIT keeps the tab alive quietly in the tray; uBlock Origin Lite
+      keeps it from burning CPU and bandwidth on ads while it's out of sight
+      and you're not there to close the popup anyway.
+    </p>
+  </div>
+
+  <h2>Install</h2>
+  <p>
+    Download the setup zip from
+    <a href="https://github.com/itsiurisilva/WinTaskIT/releases/latest">the latest release</a>,
+    unzip it, and run <code>WinTaskIT-Setup.exe</code>. It's a normal
+    Windows installer wizard &mdash; still no admin rights required, it
+    installs just for your user account.
+  </p>
+
+  <footer>
+    <a href="https://github.com/itsiurisilva/WinTaskIT">Source on GitHub</a>
+    <span>&middot;</span>
+    <a href="https://github.com/itsiurisilva/WinTaskIT/blob/master/LICENSE">MIT License</a>
+  </footer>
+</main>

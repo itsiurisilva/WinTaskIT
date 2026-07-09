@@ -1,0 +1,11 @@
+# Build output
+bin/
+obj/
+dist/
+
+# User-specific / IDE
+*.user
+.vs/
+
+# Claude Code session state (not project content)
+.claude/

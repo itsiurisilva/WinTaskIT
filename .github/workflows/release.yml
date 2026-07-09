@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Derive version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Publish self-contained single-file exe
+        run: dotnet publish WinTaskIT/WinTaskIT.csproj -r win-x64 -c Release
+
+      - name: Install Inno Setup
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+        with:
+          path: installer/WinTaskIT.iss
+          options: /DMyAppVersion=${{ steps.version.outputs.version }}
+
+      - name: Zip the installer
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist/WinTaskIT-Setup.exe" -DestinationPath "WinTaskIT-Setup-${{ github.ref_name }}.zip"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: ${{ github.ref_name }}
+          files: WinTaskIT-Setup-${{ github.ref_name }}.zip
+          generate_release_notes: true
